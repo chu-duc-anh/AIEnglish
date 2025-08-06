@@ -25,7 +25,7 @@ export const signup = async (req, res) => {
     if (usernameExists) {
         return res.status(409).json({ message: `The username '${username}' is already taken.` });
     }
-
+    
     // Check if any user already exists in the database
     const userExists = await User.findOne({}).lean();
 
@@ -130,7 +130,7 @@ export const changePassword = async (req, res) => {
         if (!currentPassword || !newPassword) {
             return res.status(400).json({ message: 'Please provide current and new passwords.' });
         }
-
+        
         if (newPassword.length < 6) {
             return res.status(400).json({ message: 'New password must be at least 6 characters long.' });
         }
@@ -166,14 +166,16 @@ export const forgotPassword = async (req, res) => {
     }
 
     const resetToken = crypto.randomBytes(20).toString('hex');
-
+    
     user.resetPasswordToken = resetToken;
     user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
     await user.save();
 
-    const resetUrl = `http://localhost:5173/#/reset-password/${resetToken}`;
+    // Use environment variable for the frontend URL with a fallback for local development
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const resetUrl = `${frontendUrl}/#/reset-password/${resetToken}`;
 
-    // --- Select image URL based on gender ---
+    // --- Select image URL based on gender (Fixed swapped URLs) ---
     const maleImageUrl = 'https://i.imgur.com/rNTOOMm.jpeg';
     const femaleImageUrl = 'https://i.imgur.com/Kqkfd69.jpeg';
     const headerImageUrl = user.gender === 'male' ? maleImageUrl : femaleImageUrl;
@@ -218,7 +220,7 @@ export const forgotPassword = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
     console.log(`✅ Password reset email sent successfully to ${user.email}`);
-
+    
     res.status(200).json({ message: successMessage });
 
   } catch (error) {
@@ -239,7 +241,7 @@ export const resetPassword = async (req, res) => {
         if (!token || !newPassword) {
             return res.status(400).json({ message: 'Token and new password are required.' });
         }
-
+        
         const user = await User.findOne({
             resetPasswordToken: token,
             resetPasswordExpires: { $gt: Date.now() },
@@ -340,9 +342,9 @@ export const updateUserRole = async (req, res) => {
         }
 
         userToUpdate.isAdmin = req.body.isAdmin;
-
+        
         const updatedUser = await userToUpdate.save();
-
+        
         res.json(updatedUser);
 
     } catch (error) {
@@ -360,7 +362,7 @@ export const deleteUser = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
         return res.status(404).json({ message: 'User not found' });
     }
-
+      
     const user = await User.findById(req.params.id);
 
     if (user) {
