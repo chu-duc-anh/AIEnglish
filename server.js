@@ -33,6 +33,13 @@ if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     process.exit(1);
 }
 
+if (!process.env.FRONTEND_URL) {
+    console.warn('⚠️  CẢNH BÁO: Biến môi trường FRONTEND_URL chưa được thiết lập.');
+    console.warn('➡️  Link đặt lại mật khẩu sẽ mặc định là "http://localhost:5173".');
+    console.warn('➡️  Để hoạt động trên production, hãy thêm dòng sau vào file ".env":');
+    console.warn('FRONTEND_URL="https://your-frontend-domain.com"');
+}
+
 
 // Kết nối đến cơ sở dữ liệu
 connectDB();
