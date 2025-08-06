@@ -1,5 +1,4 @@
 
-
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -41,7 +40,26 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(cors()); // Cho phép Cross-Origin Resource Sharing
+// Cấu hình CORS để cho phép các origin cụ thể
+const allowedOrigins = [
+  'https://ai-englishfrontend.vercel.app', // Frontend đã deploy
+  'http://localhost:5173',                 // Frontend local dev
+  'http://127.0.0.1:5173',                  // Frontend local dev
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Cho phép các request không có origin (ví dụ: mobile apps, curl)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // Cho phép gửi cookie và header authorization
+};
+
+app.use(cors(corsOptions));
 app.use(express.json()); // Cho phép server nhận dữ liệu JSON
 
 // Routes
