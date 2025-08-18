@@ -155,13 +155,13 @@ export const changePassword = async (req, res) => {
 // @route   POST /api/auth/forgot-password
 // @access  Public
 export const forgotPassword = async (req, res) => {
-  const successMessage = 'If an account matching your details exists, a password reset link has been sent to your email address.';
+  const successMessage = 'If an account with that email exists, a password reset link has been sent.';
   try {
-    const { username, email } = req.body;
-    const user = await User.findOne({ username, email });
+    const { email } = req.body;
+    const user = await User.findOne({ email });
 
     if (!user) {
-      console.warn(`⚠️  Password reset requested, but no user found with username: ${username} and email: ${email}`);
+      console.warn(`⚠️  Password reset requested, but no user found with email: ${email}`);
       return res.status(200).json({ message: successMessage });
     }
 
