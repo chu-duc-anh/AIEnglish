@@ -176,7 +176,7 @@ export const forgotPassword = async (req, res) => {
     const resetUrl = `${frontendUrl}/#/reset-password/${resetToken}`;
 
     // --- Select image URL based on gender (Fixed swapped URLs) ---
-    const maleImageUrl = 'https://i.imgur.com/rNTOOMm.jpeg';
+    const maleImageUrl = 'https://i.imgur.com/rNTOOMm.jpeg'; 
     const femaleImageUrl = 'https://i.imgur.com/Kqkfd69.jpeg';
     const headerImageUrl = user.gender === 'male' ? maleImageUrl : femaleImageUrl;
 
@@ -193,7 +193,7 @@ export const forgotPassword = async (req, res) => {
               </div>
               <p style="margin-top: 20px; font-size: 14px; color: #666;">If you did not request this, please ignore this email.</p>
               <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-              <p style="font-size: 12px; text-align: center; color: #999;">The AI English Practice Team</p>
+              <p style="font-size: 12px; text-align: center; color: #999;">The AI English Assistant Team</p>
           </div>
       </div>
     `;
@@ -212,7 +212,7 @@ export const forgotPassword = async (req, res) => {
     console.log('✅ SMTP Server connection verified.');
 
     const mailOptions = {
-        from: `AI English Practice <${process.env.EMAIL_USER}>`,
+        from: `AI English Assistant <${process.env.EMAIL_USER}>`,
         to: user.email,
         subject: 'Your Password Reset Request',
         html: emailHtml,
