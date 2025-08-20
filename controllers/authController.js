@@ -155,14 +155,14 @@ export const changePassword = async (req, res) => {
 // @route   POST /api/auth/forgot-password
 // @access  Public
 export const forgotPassword = async (req, res) => {
-  const successMessage = 'If an account with that email exists, a password reset link has been sent.';
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
 
     if (!user) {
-      console.warn(`⚠️  Password reset requested, but no user found with email: ${email}`);
-      return res.status(200).json({ message: successMessage });
+      // Per user request, return an error if the email doesn't exist.
+      // This is less secure as it allows for email enumeration, but it's what was asked.
+      return res.status(404).json({ message: 'No account with that email address exists.' });
     }
 
     const resetToken = crypto.randomBytes(20).toString('hex');
@@ -221,12 +221,13 @@ export const forgotPassword = async (req, res) => {
     await transporter.sendMail(mailOptions);
     console.log(`✅ Password reset email sent successfully to ${user.email}`);
     
-    res.status(200).json({ message: successMessage });
+    // Changed the success message to be more explicit.
+    res.status(200).json({ message: 'A password reset link has been sent to your email.' });
 
   } catch (error) {
     console.error('❌ Email Service Error:', error);
-    // Still send a generic success message for security reasons
-    res.status(200).json({ message: successMessage });
+    // Changed the catch block to return a server error.
+    res.status(500).json({ message: 'Server error. Could not send password reset email.' });
   }
 };
 
